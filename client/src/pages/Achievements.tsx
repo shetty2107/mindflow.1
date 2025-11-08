@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import {
   LogOut,
   Plus,
@@ -207,6 +208,7 @@ export default function Achievements() {
                 <Plus className="h-4 w-4 mr-2" />
                 New Plan
               </Button>
+              <LanguageSelector />
               <ThemeToggle />
               <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="button-logout">
                 <LogOut className="h-4 w-4 mr-2" />

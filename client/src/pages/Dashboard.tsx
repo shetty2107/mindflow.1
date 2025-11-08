@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { LearningRoadmap } from "@/components/LearningRoadmap";
 import confetti from "canvas-confetti";
 import {
   LogOut,
@@ -121,6 +123,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/roadmap"] });
       setTaskDialogOpen(false);
       setNewTaskTitle("");
       setNewTaskDescription("");
@@ -139,6 +142,7 @@ export default function Dashboard() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/roadmap"] });
       
       if (variables.completed) {
         confetti({
@@ -237,6 +241,7 @@ export default function Dashboard() {
                   <span className="text-white font-bold">Lv {currentLevel}</span>
                 </div>
               )}
+              <LanguageSelector />
               <ThemeToggle />
               <Button
                 variant="ghost"
@@ -411,6 +416,8 @@ export default function Dashboard() {
                 </Button>
               </Card>
             )}
+
+            <LearningRoadmap />
 
             <Card className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-2 border-purple-200/50 dark:border-purple-800/50 p-6 shadow-lg" data-testid="card-tasks-list">
               <div className="flex items-center justify-between mb-4">

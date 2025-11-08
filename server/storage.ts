@@ -18,6 +18,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserLanguage(userId: string, language: string): Promise<User | undefined>;
 
   // Study Plans
   getStudyPlan(id: string): Promise<StudyPlan | undefined>;
@@ -29,7 +30,7 @@ export interface IStorage {
   getTask(id: string): Promise<Task | undefined>;
   getTasksByUserId(userId: string): Promise<Task[]>;
   getTasksByPlanId(planId: string): Promise<Task[]>;
-  createTask(task: InsertTask): Promise<Task>;
+  createTask(task: InsertTask & { userId: string }): Promise<Task>;
   updateTask(id: string, updates: Partial<Task>): Promise<Task | undefined>;
   deleteTask(id: string): Promise<boolean>;
 
@@ -81,9 +82,19 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
+    const user: User = { ...insertUser, id, language: "English" };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUserLanguage(userId: string, language: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) {
+      return undefined;
+    }
+    const updatedUser: User = { ...user, language };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
 
   // Study Plans
@@ -137,7 +148,7 @@ export class MemStorage implements IStorage {
       .filter((task) => task.planId === planId);
   }
 
-  async createTask(insertTask: InsertTask): Promise<Task> {
+  async createTask(insertTask: InsertTask & { userId: string }): Promise<Task> {
     const id = randomUUID();
     const task: Task = {
       ...insertTask,

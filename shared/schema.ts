@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  language: text("language").notNull().default("English"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -15,7 +16,12 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+export const updateUserLanguageSchema = z.object({
+  language: z.string().min(1, "Language is required"),
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpdateUserLanguage = z.infer<typeof updateUserLanguageSchema>;
 export type User = typeof users.$inferSelect;
 
 // Study Plans table

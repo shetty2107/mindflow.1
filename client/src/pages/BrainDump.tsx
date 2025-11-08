@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, LogOut, Brain, Sparkles, X, BookOpen, Clock, Target, Zap, ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const SUBJECTS = [
   "Mathematics",
@@ -148,6 +149,7 @@ export default function BrainDump() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
+            <LanguageSelector />
             <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="button-logout">
               <LogOut className="h-4 w-4 mr-2" />

@@ -4,13 +4,14 @@ import session from "express-session";
 import MemoryStore from "memorystore";
 import bcrypt from "bcrypt";
 import { storage } from "./storage";
-import { generateStudyPlan, adaptPlanToEmotion } from "./ai";
+import { generateStudyPlan, adaptPlanToEmotion, generateLearningRoadmap } from "./ai";
 import {
   insertUserSchema,
   insertStudyPlanSchema,
   insertTaskSchema,
   insertStudySessionSchema,
   insertEmotionSchema,
+  updateUserLanguageSchema,
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -479,6 +480,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Adapt plan error:", error);
       res.status(500).json({ message: error instanceof Error ? error.message : "Failed to adapt plan" });
+    }
+  });
+
+  // ==================== LANGUAGE PREFERENCE ROUTES ====================
+
+  // Update user language preference
+  app.patch("/api/user/language", requireAuth, async (req, res) => {
+    try {
+      const data = updateUserLanguageSchema.parse(req.body);
+      const userId = req.session.userId!;
+
+      const updatedUser = await storage.updateUserLanguage(userId, data.language);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ language: updatedUser.language });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid input", errors: error.errors });
+      }
+      console.error("Update language error:", error);
+      res.status(500).json({ message: "Failed to update language" });
+    }
+  });
+
+  // Get current user info including language
+  app.get("/api/user/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        language: user.language,
+      });
+    } catch (error) {
+      console.error("Get profile error:", error);
+      res.status(500).json({ message: "Failed to get profile" });
+    }
+  });
+
+  // ==================== AI ROADMAP ROUTES ====================
+
+  // Generate learning roadmap from user's tasks
+  app.get("/api/roadmap", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const user = await storage.getUser(userId);
+      const tasks = await storage.getTasksByUserId(userId);
+      const latestPlan = await storage.getLatestStudyPlan(userId);
+      
+      if (tasks.length === 0) {
+        return res.json({ roadmap: [], message: "No tasks yet" });
+      }
+
+      const subject = latestPlan?.subject || "General Studies";
+      const language = user?.language || "English";
+
+      const simplifiedTasks = tasks.map(t => ({
+        id: t.id,
+        title: t.title,
+        description: t.description || undefined,
+        priority: t.priority,
+        completed: t.completed
+      }));
+
+      const roadmap = await generateLearningRoadmap(simplifiedTasks, subject, language);
+
+      res.json({ roadmap });
+    } catch (error) {
+      console.error("Generate roadmap error:", error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "Failed to generate roadmap" });
     }
   });
 
