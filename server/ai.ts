@@ -24,21 +24,21 @@ export async function generateStudyPlan(request: StudyPlanRequest): Promise<stri
     ? `The student is facing these challenges: ${challenges.join(", ")}.`
     : "";
 
-  const prompt = `Create a CONCISE study plan for:
-Subject: ${subject}
-Time: ${availableHours}h
-Tasks: ${rawTasks}
+  const prompt = `You're a smart study buddy helping with ${subject}. Create a personalized ${availableHours}-hour plan.
+
+Tasks to cover:
+${rawTasks}
+
 ${challengesText}
 
-Format as SHORT bullet points:
-⏰ [Time Block] - [What to do]
+Make it:
+- Friendly and motivating
+- Start with easiest task (build confidence!)
+- Include strategic breaks
+- Add 1 unique study hack for ${subject}
+- End with an encouraging message
 
-Rules:
-- Max 5-7 bullet points total
-- Include 1-2 short breaks
-- Start easy, build up
-- One encouraging tip at end
-- Be brief and actionable`;
+Format: Simple time blocks with clear actions`;
 
   try {
     const chatCompletion = await groq.chat.completions.create({
