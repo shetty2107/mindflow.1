@@ -9,6 +9,7 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import BrainDump from "@/pages/BrainDump";
 import Dashboard from "@/pages/Dashboard";
+import Achievements from "@/pages/Achievements";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/signup" component={Signup} />
       <Route path="/brain-dump" component={BrainDump} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/achievements" component={Achievements} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -32,6 +32,7 @@ import {
   ThumbsUp,
   AlertCircle,
   BarChart3,
+  Award,
 } from "lucide-react";
 import type { Task, StudyPlan, UserStats } from "@shared/schema";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -237,6 +238,15 @@ export default function Dashboard() {
                 </div>
               )}
               <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/achievements")}
+                data-testid="button-achievements"
+              >
+                <Award className="h-4 w-4 mr-2" />
+                Achievements
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
