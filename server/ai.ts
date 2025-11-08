@@ -1,14 +1,14 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 
-const apiKey = process.env.GOOGLE_API_KEY;
+const apiKey = process.env.GROQ_API_KEY;
 
 if (!apiKey) {
-  console.error('GOOGLE_API_KEY is not set in environment variables');
+  console.error('GROQ_API_KEY is not set in environment variables');
 }
 
-const genAI = new GoogleGenerativeAI(apiKey || '');
-// Try gemini-1.5-flash-latest as it's the fast, free model
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+const groq = new Groq({
+  apiKey: apiKey || '',
+});
 
 interface StudyPlanRequest {
   rawTasks: string;
@@ -47,9 +47,23 @@ Please create a personalized study plan that:
 Format the plan as a clear, easy-to-follow schedule with time blocks and specific actions. Be warm, encouraging, and mindful of the student's mental health.`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are MindFlow, a helpful AI assistant that creates concise, compassionate study plans focused on mental wellness and personalized learning."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      model: "llama3-8b-8192",
+      temperature: 0.7,
+      max_tokens: 1500,
+    });
+
+    const text = chatCompletion.choices[0]?.message?.content;
     
     if (!text) {
       throw new Error('Empty response from AI');
@@ -81,9 +95,23 @@ Please adapt this plan to better suit their current emotional state. Consider:
 Provide an updated plan that respects their mental state while still being productive. Keep the same overall goals but adjust the approach. Be supportive and understanding.`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are MindFlow, a helpful AI assistant that adapts study plans based on students' emotional states with compassion and understanding."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      model: "llama3-8b-8192",
+      temperature: 0.7,
+      max_tokens: 1500,
+    });
+
+    const text = chatCompletion.choices[0]?.message?.content;
     
     if (!text) {
       throw new Error('Empty response from AI');
