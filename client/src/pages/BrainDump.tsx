@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, LogOut, Brain, Sparkles, X, BookOpen, Clock, Target, Zap } from "lucide-react";
+import { Loader2, LogOut, Brain, Sparkles, X, BookOpen, Clock, Target, Zap, ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const SUBJECTS = [
@@ -138,6 +138,16 @@ export default function BrainDump() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setLocation("/")} 
+              data-testid="button-back"
+              className="text-muted-foreground"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
             <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="button-logout">
               <LogOut className="h-4 w-4 mr-2" />
