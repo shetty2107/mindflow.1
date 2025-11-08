@@ -387,7 +387,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Record emotion
   app.post("/api/emotions", requireAuth, async (req, res) => {
     try {
-      console.log("[/api/emotions] Received request:", JSON.stringify(req.body, null, 2));
       const data = insertEmotionSchema.parse(req.body);
       const userId = req.session.userId!;
 
@@ -398,7 +397,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         context: data.context ?? null,
       });
 
-      console.log("[/api/emotions] Emotion recorded successfully:", emotion.id);
       res.json(emotion);
     } catch (error) {
       if (error instanceof z.ZodError) {

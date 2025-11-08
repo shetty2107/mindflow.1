@@ -52,12 +52,14 @@ Preferred communication style: Simple, everyday language.
 
 **Data Storage**: In-memory storage implementation (`MemStorage` class) during development. The schema is defined using Drizzle ORM with PostgreSQL dialect, indicating production will use PostgreSQL (likely via Neon serverless). Storage interface (`IStorage`) provides abstraction for future database migration.
 
-**AI Integration**: Anthropic Claude API (using `claude-sonnet-4-20250514` model) for:
+**AI Integration**: Groq API (using `llama-3.1-8b-instant` model via groq-sdk) for:
 - Generating personalized study plans from user input
 - Adapting plans based on emotional check-ins
 - Providing wellness-focused, empathetic guidance
 
 The AI considers: subject matter, available hours, raw task descriptions, user challenges (procrastination, focus issues, etc.), and current emotional state to create adaptive study schedules with built-in breaks and encouragement.
+
+**AI Configuration**: Temperature set to 0.7 for balanced creativity/consistency, max_tokens of 1500 for comprehensive plans, and wellness-focused system prompts to maintain empathetic tone.
 
 ### Data Models
 
@@ -76,7 +78,7 @@ All models use UUID primary keys generated via PostgreSQL's `gen_random_uuid()`.
 ## External Dependencies
 
 ### Third-Party APIs
-- **Anthropic Claude API**: Core AI functionality for study plan generation and adaptation. Requires `ANTHROPIC_API_KEY` environment variable.
+- **Groq API**: Core AI functionality for study plan generation and adaptation using the llama-3.1-8b-instant model. Requires `GROQ_API_KEY` environment variable.
 
 ### Database
 - **PostgreSQL** (production): Configured via Drizzle ORM with Neon serverless driver (`@neondatabase/serverless`). Requires `DATABASE_URL` environment variable.
@@ -99,7 +101,7 @@ All models use UUID primary keys generated via PostgreSQL's `gen_random_uuid()`.
 - **Wouter**: Lightweight client-side routing
 
 ### Environment Variables Required
-- `ANTHROPIC_API_KEY`: For AI plan generation
+- `GROQ_API_KEY`: For AI plan generation using Groq's llama-3.1-8b-instant model
 - `DATABASE_URL`: PostgreSQL connection string
 - `SESSION_SECRET`: Session encryption key (defaults to development value)
 - `NODE_ENV`: Environment flag (development/production)
