@@ -106,6 +106,7 @@ export const emotions = pgTable("emotions", {
 export const insertEmotionSchema = createInsertSchema(emotions).omit({
   id: true,
   recordedAt: true,
+  userId: true,
 }).extend({
   emotion: z.enum(["stressed", "calm", "motivated", "overwhelmed", "confident", "anxious"]),
   intensity: z.number().min(1).max(5),

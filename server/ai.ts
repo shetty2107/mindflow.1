@@ -58,7 +58,7 @@ Format the plan as a clear, easy-to-follow schedule with time blocks and specifi
           content: prompt
         }
       ],
-      model: "llama3-8b-8192",
+      model: "llama-3.1-8b-instant",
       temperature: 0.7,
       max_tokens: 1500,
     });
@@ -106,7 +106,7 @@ Provide an updated plan that respects their mental state while still being produ
           content: prompt
         }
       ],
-      model: "llama3-8b-8192",
+      model: "llama-3.1-8b-instant",
       temperature: 0.7,
       max_tokens: 1500,
     });

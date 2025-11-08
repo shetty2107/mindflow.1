@@ -150,8 +150,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create study plan with AI generation
   app.post("/api/study-plans", requireAuth, async (req, res) => {
     try {
+      console.log("[/api/study-plans] Received request:", JSON.stringify(req.body, null, 2));
       const data = insertStudyPlanSchema.parse(req.body);
       const userId = req.session.userId!;
+
+      console.log("[/api/study-plans] Validated data:", data);
+      console.log("[/api/study-plans] Starting AI generation...");
 
       // Generate AI study plan
       const aiGeneratedPlan = await generateStudyPlan({
@@ -161,19 +165,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         challenges: data.challenges,
       });
 
+      console.log("[/api/study-plans] AI generation complete. Plan length:", aiGeneratedPlan.length);
+
       // Create study plan
       const plan = await storage.createStudyPlan({
         ...data,
+        customSubject: data.customSubject || null,
         userId,
         aiGeneratedPlan,
       });
 
+      console.log("[/api/study-plans] Study plan created successfully:", plan.id);
       res.json(plan);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("[/api/study-plans] Validation error:", error.errors);
         return res.status(400).json({ message: "Invalid input", errors: error.errors });
       }
-      console.error("Create study plan error:", error);
+      console.error("[/api/study-plans] Error creating study plan:", error);
+      console.error("[/api/study-plans] Error stack:", error instanceof Error ? error.stack : "No stack trace");
       res.status(500).json({ message: error instanceof Error ? error.message : "Failed to create study plan" });
     }
   });
@@ -377,20 +387,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Record emotion
   app.post("/api/emotions", requireAuth, async (req, res) => {
     try {
+      console.log("[/api/emotions] Received request:", JSON.stringify(req.body, null, 2));
       const data = insertEmotionSchema.parse(req.body);
       const userId = req.session.userId!;
 
       const emotion = await storage.createEmotion({
-        ...data,
         userId,
+        emotion: data.emotion,
+        intensity: data.intensity,
+        context: data.context ?? null,
       });
 
+      console.log("[/api/emotions] Emotion recorded successfully:", emotion.id);
       res.json(emotion);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("[/api/emotions] Validation error:", error.errors);
         return res.status(400).json({ message: "Invalid input", errors: error.errors });
       }
-      console.error("Create emotion error:", error);
+      console.error("[/api/emotions] Create emotion error:", error);
       res.status(500).json({ message: "Failed to record emotion" });
     }
   });

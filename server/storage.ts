@@ -22,7 +22,7 @@ export interface IStorage {
   getStudyPlan(id: string): Promise<StudyPlan | undefined>;
   getStudyPlansByUserId(userId: string): Promise<StudyPlan[]>;
   getLatestStudyPlan(userId: string): Promise<StudyPlan | undefined>;
-  createStudyPlan(plan: InsertStudyPlan): Promise<StudyPlan>;
+  createStudyPlan(plan: Omit<StudyPlan, 'id' | 'createdAt'>): Promise<StudyPlan>;
 
   // Tasks
   getTask(id: string): Promise<Task | undefined>;
@@ -41,7 +41,7 @@ export interface IStorage {
   // Emotions
   getEmotion(id: string): Promise<Emotion | undefined>;
   getEmotionsByUserId(userId: string): Promise<Emotion[]>;
-  createEmotion(emotion: InsertEmotion): Promise<Emotion>;
+  createEmotion(emotion: Omit<Emotion, 'id' | 'recordedAt'>): Promise<Emotion>;
 }
 
 export class MemStorage implements IStorage {
@@ -93,7 +93,7 @@ export class MemStorage implements IStorage {
     return plans[0];
   }
 
-  async createStudyPlan(insertPlan: InsertStudyPlan): Promise<StudyPlan> {
+  async createStudyPlan(insertPlan: Omit<StudyPlan, 'id' | 'createdAt'>): Promise<StudyPlan> {
     const id = randomUUID();
     const plan: StudyPlan = {
       ...insertPlan,
@@ -132,6 +132,9 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const task: Task = {
       ...insertTask,
+      planId: insertTask.planId ?? null,
+      description: insertTask.description ?? null,
+      dueDate: insertTask.dueDate ?? null,
       id,
       completed: insertTask.completed ?? false,
       priority: insertTask.priority ?? "medium",
@@ -169,6 +172,11 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const session: StudySession = {
       ...insertSession,
+      planId: insertSession.planId ?? null,
+      taskId: insertSession.taskId ?? null,
+      focusLevel: insertSession.focusLevel ?? null,
+      notes: insertSession.notes ?? null,
+      completedAt: insertSession.completedAt ?? null,
       id,
       startedAt: new Date(),
     };
@@ -196,7 +204,7 @@ export class MemStorage implements IStorage {
       .sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime());
   }
 
-  async createEmotion(insertEmotion: InsertEmotion): Promise<Emotion> {
+  async createEmotion(insertEmotion: Omit<Emotion, 'id' | 'recordedAt'>): Promise<Emotion> {
     const id = randomUUID();
     const emotion: Emotion = {
       ...insertEmotion,
