@@ -145,6 +145,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user stats
+  app.get("/api/stats", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      let stats = await storage.getUserStats(userId);
+      
+      if (!stats) {
+        stats = await storage.createUserStats(userId);
+      }
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Get stats error:", error);
+      res.status(500).json({ message: "Failed to get stats" });
+    }
+  });
+
   // ==================== STUDY PLANS ROUTES ====================
 
   // Create study plan with AI generation
@@ -174,6 +191,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         aiGeneratedPlan,
       });
+
+      // Award XP for creating a plan
+      await storage.awardXP(userId, 25);
+      const stats = await storage.getUserStats(userId);
+      if (stats) {
+        await storage.updateUserStats(userId, {
+          plansCreated: stats.plansCreated + 1,
+        });
+      }
 
       console.log("[/api/study-plans] Study plan created successfully:", plan.id);
       res.json(plan);
@@ -286,6 +312,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const updatedTask = await storage.updateTask(req.params.id, req.body);
+      
+      // Award XP if task was just completed
+      if (req.body.completed === true && !task.completed) {
+        const userId = req.session.userId!;
+        await storage.awardXP(userId, 15);
+        const stats = await storage.getUserStats(userId);
+        if (stats) {
+          await storage.updateUserStats(userId, {
+            tasksCompleted: stats.tasksCompleted + 1,
+          });
+        }
+      }
+      
       res.json(updatedTask);
     } catch (error) {
       console.error("Update task error:", error);
@@ -396,6 +435,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         intensity: data.intensity,
         context: data.context ?? null,
       });
+
+      // Award XP for emotional check-in
+      await storage.awardXP(userId, 5);
 
       res.json(emotion);
     } catch (error) {

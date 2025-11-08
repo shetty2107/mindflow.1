@@ -39,7 +39,7 @@ export const insertStudyPlanSchema = createInsertSchema(studyPlans).omit({
 }).extend({
   availableHours: z.number().min(1).max(24),
   challenges: z.array(z.string()),
-  rawTasks: z.string().min(10, "Please provide more details about your tasks"),
+  rawTasks: z.string().min(3, "Tell us what you need to study"),
 });
 
 export type InsertStudyPlan = z.infer<typeof insertStudyPlanSchema>;
@@ -114,3 +114,19 @@ export const insertEmotionSchema = createInsertSchema(emotions).omit({
 
 export type InsertEmotion = z.infer<typeof insertEmotionSchema>;
 export type Emotion = typeof emotions.$inferSelect;
+
+// User Stats for Gamification
+export const userStats = pgTable("user_stats", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique(),
+  xp: integer("xp").notNull().default(0),
+  level: integer("level").notNull().default(1),
+  currentStreak: integer("current_streak").notNull().default(0),
+  longestStreak: integer("longest_streak").notNull().default(0),
+  lastStudyDate: timestamp("last_study_date"),
+  totalStudyTime: integer("total_study_time").notNull().default(0),
+  tasksCompleted: integer("tasks_completed").notNull().default(0),
+  plansCreated: integer("plans_created").notNull().default(0),
+});
+
+export type UserStats = typeof userStats.$inferSelect;

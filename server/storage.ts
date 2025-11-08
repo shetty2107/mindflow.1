@@ -9,6 +9,7 @@ import {
   type InsertStudySession,
   type Emotion,
   type InsertEmotion,
+  type UserStats,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -42,6 +43,12 @@ export interface IStorage {
   getEmotion(id: string): Promise<Emotion | undefined>;
   getEmotionsByUserId(userId: string): Promise<Emotion[]>;
   createEmotion(emotion: Omit<Emotion, 'id' | 'recordedAt'>): Promise<Emotion>;
+
+  // User Stats
+  getUserStats(userId: string): Promise<UserStats | undefined>;
+  createUserStats(userId: string): Promise<UserStats>;
+  updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats | undefined>;
+  awardXP(userId: string, xp: number): Promise<UserStats | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -50,6 +57,7 @@ export class MemStorage implements IStorage {
   private tasks: Map<string, Task>;
   private studySessions: Map<string, StudySession>;
   private emotions: Map<string, Emotion>;
+  private userStats: Map<string, UserStats>;
 
   constructor() {
     this.users = new Map();
@@ -57,6 +65,7 @@ export class MemStorage implements IStorage {
     this.tasks = new Map();
     this.studySessions = new Map();
     this.emotions = new Map();
+    this.userStats = new Map();
   }
 
   // Users
@@ -213,6 +222,55 @@ export class MemStorage implements IStorage {
     };
     this.emotions.set(id, emotion);
     return emotion;
+  }
+
+  // User Stats
+  async getUserStats(userId: string): Promise<UserStats | undefined> {
+    return Array.from(this.userStats.values()).find(
+      (stats) => stats.userId === userId
+    );
+  }
+
+  async createUserStats(userId: string): Promise<UserStats> {
+    const id = randomUUID();
+    const stats: UserStats = {
+      id,
+      userId,
+      xp: 0,
+      level: 1,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastStudyDate: null,
+      totalStudyTime: 0,
+      tasksCompleted: 0,
+      plansCreated: 0,
+    };
+    this.userStats.set(userId, stats);
+    return stats;
+  }
+
+  async updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats | undefined> {
+    const stats = await this.getUserStats(userId);
+    if (!stats) return undefined;
+
+    const updatedStats = { ...stats, ...updates };
+    this.userStats.set(userId, updatedStats);
+    return updatedStats;
+  }
+
+  async awardXP(userId: string, xp: number): Promise<UserStats | undefined> {
+    let stats = await this.getUserStats(userId);
+    if (!stats) {
+      stats = await this.createUserStats(userId);
+    }
+
+    const newXP = stats.xp + xp;
+    const newLevel = Math.floor(newXP / 100) + 1;
+
+    return this.updateUserStats(userId, {
+      xp: newXP,
+      level: newLevel,
+    });
   }
 }
 

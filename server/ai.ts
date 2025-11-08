@@ -24,34 +24,28 @@ export async function generateStudyPlan(request: StudyPlanRequest): Promise<stri
     ? `The student is facing these challenges: ${challenges.join(", ")}.`
     : "";
 
-  const prompt = `You are MindFlow, an AI study companion focused on mental wellness and personalized learning.
-
-Create a detailed, compassionate study plan based on the following information:
-
+  const prompt = `Create a CONCISE study plan for:
 Subject: ${subject}
-Available Study Time: ${availableHours} hours
-Tasks to Complete:
-${rawTasks}
-
+Time: ${availableHours}h
+Tasks: ${rawTasks}
 ${challengesText}
 
-Please create a personalized study plan that:
-1. Breaks down the tasks into manageable chunks
-2. Allocates time efficiently across the ${availableHours} hours
-3. Takes into account the student's challenges (if mentioned)
-4. Includes short breaks for mental wellness
-5. Prioritizes tasks based on difficulty and importance
-6. Provides encouraging, supportive guidance
-7. Suggests specific study techniques for each task type
+Format as SHORT bullet points:
+⏰ [Time Block] - [What to do]
 
-Format the plan as a clear, easy-to-follow schedule with time blocks and specific actions. Be warm, encouraging, and mindful of the student's mental health.`;
+Rules:
+- Max 5-7 bullet points total
+- Include 1-2 short breaks
+- Start easy, build up
+- One encouraging tip at end
+- Be brief and actionable`;
 
   try {
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: "You are MindFlow, a helpful AI assistant that creates concise, compassionate study plans focused on mental wellness and personalized learning."
+          content: "You are MindFlow AI. Create SHORT, actionable study plans. Use bullet points. Be concise. Max 500 characters. Focus on what matters."
         },
         {
           role: "user",
@@ -60,7 +54,7 @@ Format the plan as a clear, easy-to-follow schedule with time blocks and specifi
       ],
       model: "llama-3.1-8b-instant",
       temperature: 0.7,
-      max_tokens: 1500,
+      max_tokens: 400,
     });
 
     const text = chatCompletion.choices[0]?.message?.content;
@@ -81,25 +75,18 @@ export async function adaptPlanToEmotion(
   emotion: string,
   intensity: number
 ): Promise<string> {
-  const prompt = `You are MindFlow, an AI study companion. A student is currently feeling ${emotion} (intensity: ${intensity}/5).
-
-Their original study plan was:
+  const prompt = `Student feeling: ${emotion} (${intensity}/5)
+Original plan:
 ${originalPlan}
 
-Please adapt this plan to better suit their current emotional state. Consider:
-- If they're stressed or overwhelmed: suggest shorter sessions, more breaks, easier tasks first
-- If they're motivated or confident: encourage tackling harder tasks, longer focus sessions
-- If they're anxious: provide reassurance, break tasks into smaller steps
-- If they're calm: suggest this is a good time for challenging material
-
-Provide an updated plan that respects their mental state while still being productive. Keep the same overall goals but adjust the approach. Be supportive and understanding.`;
+Adapt this plan BRIEFLY for their mood. Max 5 bullet points. Be encouraging.`;
 
   try {
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: "You are MindFlow, a helpful AI assistant that adapts study plans based on students' emotional states with compassion and understanding."
+          content: "You are MindFlow AI. Adapt study plans to emotions. Be brief, supportive, actionable. Max 400 characters."
         },
         {
           role: "user",
@@ -108,7 +95,7 @@ Provide an updated plan that respects their mental state while still being produ
       ],
       model: "llama-3.1-8b-instant",
       temperature: 0.7,
-      max_tokens: 1500,
+      max_tokens: 400,
     });
 
     const text = chatCompletion.choices[0]?.message?.content;

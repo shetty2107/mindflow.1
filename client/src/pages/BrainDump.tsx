@@ -5,12 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, LogOut, Brain, BookOpen } from "lucide-react";
+import { Loader2, LogOut, Brain, Sparkles, X, BookOpen, Clock, Target, Zap } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const SUBJECTS = [
@@ -32,13 +31,15 @@ const CHALLENGES = [
   "Overwhelming workload",
 ];
 
+const HOURS_OPTIONS = [1, 2, 3, 4, 5, 6, 8];
+
 export default function BrainDump() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const [tasks, setTasks] = useState("");
-  const [availableHours, setAvailableHours] = useState("4");
+  const [availableHours, setAvailableHours] = useState(4);
   const [subject, setSubject] = useState("");
   const [customSubject, setCustomSubject] = useState("");
   const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
@@ -70,8 +71,8 @@ export default function BrainDump() {
     if (!tasks.trim()) {
       toast({
         variant: "destructive",
-        title: "Missing information",
-        description: "Please describe your tasks",
+        title: "Tell us what to study",
+        description: "Please describe what you need to work on",
       });
       return;
     }
@@ -79,8 +80,8 @@ export default function BrainDump() {
     if (!subject) {
       toast({
         variant: "destructive",
-        title: "Missing information",
-        description: "Please select a subject",
+        title: "Pick a subject",
+        description: "Please select your study subject",
       });
       return;
     }
@@ -90,7 +91,7 @@ export default function BrainDump() {
     try {
       const response = await apiRequest("POST", "/api/study-plans", {
         rawTasks: tasks,
-        availableHours: parseInt(availableHours),
+        availableHours,
         subject: subject === "Other" && customSubject ? customSubject : subject,
         customSubject: subject === "Other" ? customSubject : null,
         challenges: selectedChallenges,
@@ -99,16 +100,16 @@ export default function BrainDump() {
       if (response.ok) {
         const data = await response.json();
         toast({
-          title: "Study plan created!",
-          description: "Your personalized plan is ready.",
+          title: "+25 XP Earned",
+          description: "Your personalized plan is ready!",
         });
         setLocation(`/dashboard?planId=${data.id}`);
       } else {
         const data = await response.json();
         toast({
           variant: "destructive",
-          title: "Error",
-          description: data.message || "Failed to create study plan",
+          title: "Oops!",
+          description: data.message || "Try again with more details",
         });
       }
     } catch (err) {
@@ -123,13 +124,18 @@ export default function BrainDump() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-purple-950 dark:to-slate-900">
       {/* Header */}
-      <header className="border-b">
+      <header className="backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border-b border-purple-200/50 dark:border-purple-800/50 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Brain className="h-7 w-7 text-primary" data-testid="icon-logo" />
-            <span className="text-xl font-semibold" data-testid="text-app-name">MindFlow</span>
+            <div className="relative">
+              <Brain className="h-8 w-8 text-purple-600 dark:text-purple-400" data-testid="icon-logo" />
+              <Sparkles className="h-4 w-4 text-pink-500 absolute -top-1 -right-1 animate-pulse" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" data-testid="text-app-name">
+              MindFlow
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -142,77 +148,76 @@ export default function BrainDump() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="mb-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <BookOpen className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl md:text-4xl font-bold" data-testid="heading-brain-dump">Brain Dump</h1>
-          </div>
-          <p className="text-muted-foreground" data-testid="text-description">
-            Tell us what's on your mind, and we'll create a personalized study plan
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent" data-testid="heading-brain-dump">
+            What's on your mind?
+          </h1>
+          <p className="text-lg text-muted-foreground" data-testid="text-description">
+            Tell me what you need to study, and I'll create your perfect plan
           </p>
         </div>
 
-        <Card className="p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-2 border-purple-200/50 dark:border-purple-800/50 shadow-2xl shadow-purple-500/20 p-8 md:p-10">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Tasks Input */}
-            <div className="space-y-2">
-              <Label htmlFor="tasks" className="text-base font-semibold" data-testid="label-tasks">
+            <div className="space-y-3">
+              <Label htmlFor="tasks" className="text-lg font-bold text-purple-900 dark:text-purple-300 flex items-center gap-2" data-testid="label-tasks">
+                <BookOpen className="h-5 w-5" />
                 What do you need to study?
               </Label>
               <Textarea
                 id="tasks"
-                placeholder="Example: Finish Chapter 5 of calculus textbook, review Spanish vocabulary, complete history essay draft..."
+                placeholder="Example: math exam, spanish vocabulary, history essay..."
                 value={tasks}
                 onChange={(e) => setTasks(e.target.value)}
-                rows={8}
+                rows={6}
                 disabled={isLoading}
                 data-testid="input-tasks"
-                className="resize-none"
+                className="text-base bg-white/50 dark:bg-slate-800/50 border-2 border-purple-200 dark:border-purple-800 focus:border-purple-500 dark:focus:border-purple-500 transition-all"
               />
-              <p className="text-sm text-muted-foreground" data-testid="text-tasks-hint">
-                Be as detailed as you'd like - this helps us create a better plan
-              </p>
             </div>
 
             {/* Available Hours */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold" data-testid="label-hours">
-                How many hours can you study today?
+              <Label className="text-lg font-bold text-purple-900 dark:text-purple-300 flex items-center gap-2" data-testid="label-hours">
+                <Clock className="h-5 w-5" />
+                How many hours can you study?
               </Label>
-              <RadioGroup
-                value={availableHours}
-                onValueChange={setAvailableHours}
-                disabled={isLoading}
-                className="flex flex-wrap gap-3"
-                data-testid="radiogroup-hours"
-              >
-                {["1", "2", "3", "4", "5", "6", "8"].map((hours) => (
-                  <div key={hours} className="flex items-center">
-                    <RadioGroupItem
-                      value={hours}
-                      id={`hours-${hours}`}
-                      data-testid={`radio-hours-${hours}`}
-                    />
-                    <Label
-                      htmlFor={`hours-${hours}`}
-                      className="ml-2 cursor-pointer font-normal"
-                    >
-                      {hours} {hours === "1" ? "hour" : "hours"}
-                    </Label>
-                  </div>
+              <div className="flex flex-wrap gap-2">
+                {HOURS_OPTIONS.map((hours) => (
+                  <Button
+                    key={hours}
+                    type="button"
+                    variant={availableHours === hours ? "default" : "outline"}
+                    size="lg"
+                    onClick={() => setAvailableHours(hours)}
+                    disabled={isLoading}
+                    data-testid={`button-hours-${hours}`}
+                    className={availableHours === hours 
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-purple-500/50" 
+                      : "border-2 border-purple-200 dark:border-purple-800 hover:border-purple-500"
+                    }
+                  >
+                    {hours}h
+                  </Button>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
 
             {/* Subject Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="subject" className="text-base font-semibold" data-testid="label-subject">
+            <div className="space-y-3">
+              <Label htmlFor="subject" className="text-lg font-bold text-purple-900 dark:text-purple-300 flex items-center gap-2" data-testid="label-subject">
+                <Target className="h-5 w-5" />
                 Primary subject
               </Label>
               <Select value={subject} onValueChange={setSubject} disabled={isLoading}>
-                <SelectTrigger id="subject" data-testid="select-subject">
-                  <SelectValue placeholder="Select a subject" />
+                <SelectTrigger 
+                  id="subject" 
+                  data-testid="select-subject"
+                  className="text-base border-2 border-purple-200 dark:border-purple-800 focus:border-purple-500 bg-white/50 dark:bg-slate-800/50"
+                >
+                  <SelectValue placeholder="Choose your subject" />
                 </SelectTrigger>
                 <SelectContent>
                   {SUBJECTS.map((subj) => (
@@ -226,44 +231,48 @@ export default function BrainDump() {
 
             {/* Custom Subject Input */}
             {subject === "Other" && (
-              <div className="space-y-2">
-                <Label htmlFor="customSubject" className="text-base font-semibold" data-testid="label-custom-subject">
+              <div className="space-y-3">
+                <Label htmlFor="customSubject" className="text-lg font-bold text-purple-900 dark:text-purple-300" data-testid="label-custom-subject">
                   Specify your subject
                 </Label>
                 <Input
                   id="customSubject"
-                  placeholder="e.g., Music Theory, Photography, etc."
+                  placeholder="e.g., Music Theory, Photography"
                   value={customSubject}
                   onChange={(e) => setCustomSubject(e.target.value)}
                   disabled={isLoading}
                   data-testid="input-custom-subject"
+                  className="text-base border-2 border-purple-200 dark:border-purple-800 focus:border-purple-500 bg-white/50 dark:bg-slate-800/50"
                 />
               </div>
             )}
 
-            {/* Challenges */}
+            {/* Challenges - Now with Chips */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold" data-testid="label-challenges">
-                What challenges are you facing? (optional)
+              <Label className="text-lg font-bold text-purple-900 dark:text-purple-300 flex items-center gap-2" data-testid="label-challenges">
+                <Zap className="h-5 w-5" />
+                Any challenges? (optional)
               </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {CHALLENGES.map((challenge) => (
-                  <div key={challenge} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={challenge}
-                      checked={selectedChallenges.includes(challenge)}
-                      onCheckedChange={() => handleChallengeToggle(challenge)}
-                      disabled={isLoading}
-                      data-testid={`checkbox-${challenge.toLowerCase().replace(/\s+/g, "-")}`}
-                    />
-                    <Label
-                      htmlFor={challenge}
-                      className="text-sm font-normal cursor-pointer"
+              <div className="flex flex-wrap gap-2">
+                {CHALLENGES.map((challenge) => {
+                  const isSelected = selectedChallenges.includes(challenge);
+                  return (
+                    <Badge
+                      key={challenge}
+                      variant={isSelected ? "default" : "outline"}
+                      className={`cursor-pointer px-4 py-2 text-sm transition-all ${
+                        isSelected
+                          ? "bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-lg shadow-orange-500/50"
+                          : "border-2 border-orange-200 dark:border-orange-800 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-950"
+                      }`}
+                      onClick={() => !isLoading && handleChallengeToggle(challenge)}
+                      data-testid={`badge-${challenge.toLowerCase().replace(/\s+/g, "-")}`}
                     >
                       {challenge}
-                    </Label>
-                  </div>
-                ))}
+                      {isSelected && <X className="ml-2 h-3 w-3" />}
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
 
@@ -271,17 +280,20 @@ export default function BrainDump() {
             <Button
               type="submit"
               size="lg"
-              className="w-full text-base"
+              className="w-full text-lg font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/50 h-14"
               disabled={isLoading}
               data-testid="button-submit"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Creating your plan...
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  Creating your perfect plan...
                 </>
               ) : (
-                "Generate My Study Plan"
+                <>
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Generate My Study Plan (+25 XP)
+                </>
               )}
             </Button>
           </form>
