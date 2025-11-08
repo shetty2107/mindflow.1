@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindFlow - AI-Powered Mental Wellness Study Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🧠</span>
+                <span class="logo-text">MindFlow</span>
+                <!-- Add this logout button in navbar -->
+</button>
+                <button style="background: #EF4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="handleLogout()"><a href="login.html">👤 Logout</a>
+</button>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="#" onclick="showPage('homepage'); return false;">Home</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+            </div>
+            <button class="btn btn-primary" onclick="showPage('braindump')">Get Started</button>
+        </div>
+    </nav>
+
+    <!-- Page 1: Homepage -->
+    <div id="homepage" class="page active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Your Brain. Your Way. Your Study.</h1>
+                <p class="hero-subtitle">Personalized study plans that adapt to your mental health and energy levels</p>
+                <button class="btn btn-hero" onclick="showPage('braindump')">
+                    Start Your Journey
+                    <span class="hero-emoji">🧠💡✨</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <h2 class="section-title">How MindFlow Helps You</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Brain Dump</h3>
+                        <p>Overwhelmed? Type everything you need to study. AI breaks it into manageable steps.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Energy Mapper</h3>
+                        <p>Are you a morning or night person? We schedule tasks during YOUR peak hours.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">😊</div>
+                        <h3>Emotion Tracker</h3>
+                        <p>Feeling anxious? Tired? We adapt your plan in real-time based on how you feel.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎉</div>
+                        <h3>Progress Celebration</h3>
+                        <p>Complete tasks, earn streaks, see your growth. Every small win matters.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="container">
+                <h2 class="section-title">Built with Care</h2>
+                <p class="about-text">We built MindFlow because we know what it's like to study with anxiety, to procrastinate, to feel overwhelmed. While other study apps force one-size-fits-all schedules, MindFlow uses AI to create plans that adapt to YOUR mental health, YOUR energy levels, and YOUR challenges. Every task is broken into dopamine-friendly steps. Every emotion gets a personalized response. And every completed task is celebrated.</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 MindFlow Team | Built for Students Who Deserve Better</p>
+        </footer>
+    </div>
+
+    <!-- Page 2: Brain Dump Form -->
+    <div id="braindump" class="page">
+        <div class="form-container">
+            <div class="form-card">
+                <!-- Added back button -->
+                <div class="form-header">
+                    <!-- <button class="btn-back" onclick="goBack(); return false;">← Back</button> -->
+                    <h1 class="form-title">Brain Dump - Tell Us Everything 🧠</h1>
+                </div>
+                <p class="form-subtitle">Don't worry about organizing. Just list everything you need to study.</p>
+
+                <form id="brainDumpForm" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label for="tasks" class="form-label">What do you need to study?</label>
+                        <textarea
+                            id="tasks" 
+                            class="form-control" 
+                            rows="8" 
+                            placeholder="Example: Math exam on Nov 20, Physics homework chapter 5, Chemistry lab report, History essay draft..."
+                            required
+                            style="background-color: white;"
+                            
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deadline" class="form-label">When's your main deadline?</label>
+                        <input type="date" id="deadline" class="form-control" required style="background-color: white;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="knowledge" class="form-label">Your current knowledge level?</label>
+                        <select id="knowledge" class="form-control" required style="background-color: white;">
+                            <option value="">Select level...</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">How many hours can you study today?</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="hours" value="2" required>
+                                <span>2 hours</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="hours" value="4" checked>
+                                <span>4 hours</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="hours" value="6">
+                                <span>6 hours</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="hours" value="8">
+                                <span>8+ hours</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">What challenges do you face? (Select all that apply)</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="concentration">
+                                <span>Difficulty concentrating</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="procrastination">
+                                <span>Procrastination</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="anxiety">
+                                <span>Anxiety while studying</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="memory">
+                                <span>Poor memory/retention</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="challenges" value="time">
+                                <span>Time management issues</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject" class="form-label">What subject are you studying?</label>
+                        <select id="subject" class="form-control" required style="background-color: white;">
+                            <option value="">Select subject...</option>
+                            <option value="math">Mathematics</option>
+                            <option value="science">Science</option>
+                            <option value="history">History</option>
+                            <option value="language">Language</option>
+                            <option value="literature">Literature</option>
+                            <option value="economics">Economics</option>
+                            <option value="programming">Programming</option>
+                            <option value="art">Art</option>
+                            <option value="music">Music</option>
+                            <option value="psychology">Psychology</option>
+                            <option value="other">Other Subject</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom subject input field that shows when "Other" is selected -->
+                    <div class="form-group" id="customSubjectGroup" style="display: none;">
+                        <label for="customSubject" class="form-label">Enter your subject name</label>
+                        <input type="text" id="customSubject" class="form-control" placeholder="e.g., Philosophy, Nursing, Engineering" style="background-color: white;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="energyTime" class="form-label">When do you focus best?</label>
+                        <select id="energyTime" class="form-control" required style="background-color: white;">
+                            <option value="">Select time...</option>
+                            <option value="morning">Morning Person</option>
+                            <option value="afternoon">Afternoon Person</option>
+                            <option value="night">Night Owl</option>
+                            <option value="unsure">Not Sure</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit" id="submitBtn">
+                        Generate My Personalized Plan ✨
+                    </button>
+                </form>
+
+                <div id="loadingState" class="loading-state" style="display: none;">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Creating your personalized study plan... ✨</p>
+                    <p class="loading-subtext" id="loadingMessage">AI is analyzing your tasks and optimizing your schedule...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Results/Success Page -->
+    <div id="results" class="page">
+        <div class="results-container">
+            <div class="confetti" id="confetti"></div>
+            <div class="results-card">
+                <h1 class="results-title">Your Plan is Ready! 🎉</h1>
+                <div class="results-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalTasks">9</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="estimatedTime">4.5</div>
+                        <div class="stat-label">Estimated Hours</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="breakTime">70</div>
+                        <div class="stat-label">Break Minutes</div>
+                    </div>
+                </div>
+                <p class="results-message" id="resultsMessage">Optimal schedule created for morning person</p>
+                <div class="results-actions">
+                    <button class="btn btn-primary btn-large" onclick="showPage('dashboard')">View Dashboard</button>
+                    <button class="btn btn-secondary" onclick="showPage('braindump')">Adjust Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 4: Dashboard -->
+    <div id="dashboard" class="page">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Hi there! 👋</h1>
+            </div>
+
+            <!-- Emotion Selector -->
+            <section class="emotion-section">
+                <h2 class="section-heading">How are you feeling right now?</h2>
+                <div class="emotion-buttons">
+                    <button class="emotion-btn" onclick="selectEmotion('happy')" data-emotion="happy">
+                        <span class="emotion-emoji">😊</span>
+                        <span class="emotion-label">Happy &amp; Focused</span>
+                    </button>
+                    <button class="emotion-btn" onclick="selectEmotion('normal')" data-emotion="normal">
+                        <span class="emotion-emoji">😐</span>
+                        <span class="emotion-label">Normal</span>
+                    </button>
+                    <button class="emotion-btn" onclick="selectEmotion('anxious')" data-emotion="anxious">
+                        <span class="emotion-emoji">😰</span>
+                        <span class="emotion-label">Anxious</span>
+                    </button>
+                    <button class="emotion-btn" onclick="selectEmotion('tired')" data-emotion="tired">
+                        <span class="emotion-emoji">😟</span>
+                        <span class="emotion-label">Tired</span>
+                    </button>
+                    <button class="emotion-btn" onclick="selectEmotion('frustrated')" data-emotion="frustrated">
+                        <span class="emotion-emoji">😤</span>
+                        <span class="emotion-label">Frustrated</span>
+                    </button>
+                </div>
+                <div class="emotion-feedback" id="emotionFeedback"></div>
+            </section>
+
+            <!-- Main Content Grid -->
+            <div class="dashboard-grid">
+                <!-- Study Plan Section -->
+                <section class="study-plan-section">
+                    <div class="section-header">
+                        <h2 class="section-heading">Today's Study Plan</h2>
+                        <p class="section-subheading" id="energyOptimized">Optimized for your morning energy</p>
+                    </div>
+                    <div id="taskList" class="task-list">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                    <div class="plan-actions">
+                        <button class="btn btn-secondary" onclick="showPage('braindump')">Add More Tasks</button>
+                        <button class="btn btn-outline" onclick="regeneratePlan()">Regenerate Plan</button>
+                    </div>
+                </section>
+
+                <!-- Sidebar -->
+                <aside class="dashboard-sidebar">
+                    <!-- Progress Stats -->
+                    <div class="stats-card">
+                        <h3 class="card-title">Today's Progress</h3>
+                        <div class="progress-circle">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring-circle-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="progress-ring-circle" cx="60" cy="60" r="52" id="progressCircle"></circle>
+                            </svg>
+                            <div class="progress-text">
+                                <span class="progress-percent" id="progressPercent">38%</span>
+                            </div>
+                        </div>
+                        <p class="progress-label" id="progressLabel">3 of 8 tasks done</p>
+                    </div>
+
+                    <!-- Study Streak -->
+                    <div class="stats-card">
+                        <h3 class="card-title">Study Streak</h3>
+                        <div class="streak-display">
+                            <span class="streak-icon">🔥</span>
+                            <span class="streak-number" id="streakNumber">7</span>
+                            <span class="streak-label">Day Streak!</span>
+                        </div>
+                        <p class="streak-message">Keep it up! You're on fire!</p>
+                    </div>
+
+                    <!-- Weekly Summary -->
+                    <div class="stats-card">
+                        <h3 class="card-title">Weekly Summary</h3>
+                        <div class="summary-stats">
+                            <div class="summary-item">
+                                <span class="summary-icon">⏱️</span>
+                                <div>
+                                    <div class="summary-value" id="weekHours">12</div>
+                                    <div class="summary-label">Hours Studied</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-icon">📚</span>
+                                <div>
+                                    <div class="summary-value" id="subjectsCovered">8</div>
+                                    <div class="summary-label">Subjects Covered</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievements">
+                            <span class="achievement-badge" title="First Steps">🌟</span>
+                            <span class="achievement-badge" title="Week Warrior">🔥</span>
+                            <span class="achievement-badge" title="Focus Master">🎯</span>
+                            <span class="achievement-badge" title="Self-Care Champion">💚</span>
+                        </div>
+                    </div>
+
+                    <!-- Wellness Tips -->
+                    <div class="stats-card wellness-card">
+                        <h3 class="card-title">💡 Today's Wellness Tip</h3>
+                        <p class="wellness-tip" id="wellnessTip">The Pomodoro Technique: Study for 25 minutes, break for 5. It works!</p>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+
+</script>
+</body>
+</html>
