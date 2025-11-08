@@ -58,7 +58,7 @@ export default function BrainDump() {
         title: "Logged out",
         description: "See you next time!",
       });
-      setLocation("/");
+      setLocation("/login");
     } catch (err) {
       console.error("Logout error:", err);
     }

@@ -34,6 +34,8 @@ export const studyPlans = pgTable("study_plans", {
 export const insertStudyPlanSchema = createInsertSchema(studyPlans).omit({
   id: true,
   createdAt: true,
+  userId: true,
+  aiGeneratedPlan: true,
 }).extend({
   availableHours: z.number().min(1).max(24),
   challenges: z.array(z.string()),
