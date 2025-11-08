@@ -19,16 +19,23 @@ import {
   TrendingUp,
   Plus,
   Lightbulb,
+  Frown,
+  Smile,
+  Zap,
+  CloudRain,
+  ThumbsUp,
+  AlertCircle,
+  PartyPopper,
 } from "lucide-react";
 import type { Task, StudySession, StudyPlan } from "@shared/schema";
 
 const EMOTION_OPTIONS = [
-  { emoji: "😰", label: "Stressed", value: "stressed" },
-  { emoji: "😌", label: "Calm", value: "calm" },
-  { emoji: "💪", label: "Motivated", value: "motivated" },
-  { emoji: "😵", label: "Overwhelmed", value: "overwhelmed" },
-  { emoji: "😊", label: "Confident", value: "confident" },
-  { emoji: "😟", label: "Anxious", value: "anxious" },
+  { icon: CloudRain, label: "Stressed", value: "stressed" },
+  { icon: Smile, label: "Calm", value: "calm" },
+  { icon: Zap, label: "Motivated", value: "motivated" },
+  { icon: Frown, label: "Overwhelmed", value: "overwhelmed" },
+  { icon: ThumbsUp, label: "Confident", value: "confident" },
+  { icon: AlertCircle, label: "Anxious", value: "anxious" },
 ];
 
 const WELLNESS_TIPS = [
@@ -126,8 +133,8 @@ export default function Dashboard() {
       <header className="border-b sticky top-0 bg-background z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🧠</span>
-            <span className="text-xl font-semibold">MindFlow</span>
+            <Brain className="h-7 w-7 text-primary" data-testid="icon-logo" />
+            <span className="text-xl font-semibold" data-testid="text-app-name">MindFlow</span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -151,7 +158,7 @@ export default function Dashboard() {
       <div className="container mx-auto px-4 py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card>
+          <Card data-testid="card-stat-total">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -167,7 +174,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card data-testid="card-stat-completed">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Completed</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
@@ -183,7 +190,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card data-testid="card-stat-time">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Study Time</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
@@ -199,7 +206,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card data-testid="card-stat-progress">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Progress</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -221,18 +228,19 @@ export default function Dashboard() {
           <div className="lg:col-span-2 space-y-6">
             {/* Progress Bar */}
             {totalTasks > 0 && (
-              <Card className="p-6">
+              <Card className="p-6" data-testid="card-progress-bar">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Overall Progress</h3>
-                    <span className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold" data-testid="heading-progress">Overall Progress</h3>
+                    <span className="text-sm text-muted-foreground" data-testid="text-progress-count">
                       {completedTasks} of {totalTasks} tasks
                     </span>
                   </div>
-                  <Progress value={completionRate} className="h-2" />
+                  <Progress value={completionRate} className="h-2" data-testid="progress-bar" />
                   {completionRate === 100 && (
-                    <p className="text-sm text-primary font-medium">
-                      🎉 Congratulations! All tasks completed!
+                    <p className="text-sm text-primary font-medium flex items-center gap-2" data-testid="text-all-complete">
+                      <PartyPopper className="h-4 w-4" />
+                      Congratulations! All tasks completed!
                     </p>
                   )}
                 </div>
@@ -248,11 +256,11 @@ export default function Dashboard() {
                 <Skeleton className="h-4 w-3/4" />
               </Card>
             ) : latestPlan ? (
-              <Card className="p-6">
+              <Card className="p-6" data-testid="card-study-plan">
                 <div className="flex items-center gap-2 mb-4">
                   <Brain className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-lg">AI Study Plan</h3>
-                  <Badge variant="secondary" className="ml-auto">
+                  <h3 className="font-semibold text-lg" data-testid="heading-study-plan">AI Study Plan</h3>
+                  <Badge variant="secondary" className="ml-auto" data-testid="badge-subject">
                     {latestPlan.subject}
                   </Badge>
                 </div>
@@ -264,9 +272,9 @@ export default function Dashboard() {
                 </div>
               </Card>
             ) : (
-              <Card className="p-6 text-center">
+              <Card className="p-6 text-center" data-testid="card-no-plan">
                 <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground mb-4">No study plan yet</p>
+                <p className="text-muted-foreground mb-4" data-testid="text-no-plan">No study plan yet</p>
                 <Button onClick={() => setLocation("/brain-dump")} data-testid="button-create-plan">
                   Create Your First Plan
                 </Button>
@@ -274,9 +282,9 @@ export default function Dashboard() {
             )}
 
             {/* Tasks List */}
-            <Card className="p-6">
+            <Card className="p-6" data-testid="card-tasks-list">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg">Your Tasks</h3>
+                <h3 className="font-semibold text-lg" data-testid="heading-tasks">Your Tasks</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -317,11 +325,12 @@ export default function Dashboard() {
                           className={`font-medium ${
                             task.completed ? "line-through text-muted-foreground" : ""
                           }`}
+                          data-testid={`text-task-title-${task.id}`}
                         >
                           {task.title}
                         </p>
                         {task.description && (
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-muted-foreground mt-1" data-testid={`text-task-description-${task.id}`}>
                             {task.description}
                           </p>
                         )}
@@ -334,6 +343,7 @@ export default function Dashboard() {
                             ? "default"
                             : "secondary"
                         }
+                        data-testid={`badge-task-priority-${task.id}`}
                       >
                         {task.priority}
                       </Badge>
@@ -341,7 +351,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground py-8">
+                <p className="text-center text-muted-foreground py-8" data-testid="text-no-tasks">
                   No tasks yet. Create a study plan to get started!
                 </p>
               )}
@@ -351,33 +361,36 @@ export default function Dashboard() {
           {/* Right Sidebar */}
           <div className="space-y-6">
             {/* Emotion Tracker */}
-            <Card className="p-6">
+            <Card className="p-6" data-testid="card-emotion-tracker">
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">😊</span>
-                <h3 className="font-semibold">How are you feeling?</h3>
+                <Smile className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold" data-testid="heading-emotions">How are you feeling?</h3>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {EMOTION_OPTIONS.map((option) => (
-                  <Button
-                    key={option.value}
-                    variant="outline"
-                    className="h-auto flex-col py-3 hover-elevate"
-                    onClick={() => handleEmotionClick(option.value)}
-                    disabled={emotionMutation.isPending}
-                    data-testid={`button-emotion-${option.value}`}
-                  >
-                    <span className="text-2xl mb-1">{option.emoji}</span>
-                    <span className="text-xs">{option.label}</span>
-                  </Button>
-                ))}
+                {EMOTION_OPTIONS.map((option) => {
+                  const IconComponent = option.icon;
+                  return (
+                    <Button
+                      key={option.value}
+                      variant="outline"
+                      className="h-auto flex-col py-3 hover-elevate"
+                      onClick={() => handleEmotionClick(option.value)}
+                      disabled={emotionMutation.isPending}
+                      data-testid={`button-emotion-${option.value}`}
+                    >
+                      <IconComponent className="h-6 w-6 mb-1" />
+                      <span className="text-xs">{option.label}</span>
+                    </Button>
+                  );
+                })}
               </div>
             </Card>
 
             {/* Wellness Tips */}
-            <Card className="p-6">
+            <Card className="p-6" data-testid="card-wellness-tips">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Wellness Tip</h3>
+                <h3 className="font-semibold" data-testid="heading-wellness-tip">Wellness Tip</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-4" data-testid="wellness-tip">
                 {WELLNESS_TIPS[currentTip]}

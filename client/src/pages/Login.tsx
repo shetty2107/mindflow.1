@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2 } from "lucide-react";
+import { Loader2, Brain } from "lucide-react";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -49,20 +49,22 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
-          <div className="text-5xl mb-4">🧠</div>
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your MindFlow account</CardDescription>
+          <div className="flex justify-center mb-4">
+            <Brain className="h-12 w-12 text-primary" data-testid="icon-logo" />
+          </div>
+          <CardTitle className="text-2xl" data-testid="heading-login">Welcome Back</CardTitle>
+          <CardDescription data-testid="text-description">Sign in to your MindFlow account</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive" className="mb-4" data-testid="alert-error">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" data-testid="label-username">Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -76,7 +78,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" data-testid="label-password">Password</Label>
               <Input
                 id="password"
                 type="password"

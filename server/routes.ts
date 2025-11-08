@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import bcrypt from "bcrypt";
 import { storage } from "./storage";
 import { generateStudyPlan, adaptPlanToEmotion } from "./ai";
 import {
@@ -21,6 +22,7 @@ declare module "express-session" {
 }
 
 const MemoryStoreSession = MemoryStore(session);
+const SALT_ROUNDS = 10;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Session middleware
@@ -62,8 +64,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username already exists" });
       }
 
-      // Create user (in production, hash the password!)
-      const user = await storage.createUser(data);
+      // Hash password
+      const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
+
+      // Create user
+      const user = await storage.createUser({
+        username: data.username,
+        password: hashedPassword,
+      });
 
       // Set session
       req.session.userId = user.id;
@@ -87,7 +95,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { username, password } = req.body;
 
       const user = await storage.getUserByUsername(username);
-      if (!user || user.password !== password) {
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Compare hashed password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 

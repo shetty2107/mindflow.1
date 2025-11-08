@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, Brain, BookOpen } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const SUBJECTS = [
@@ -128,8 +128,8 @@ export default function BrainDump() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🧠</span>
-            <span className="text-xl font-semibold">MindFlow</span>
+            <Brain className="h-7 w-7 text-primary" data-testid="icon-logo" />
+            <span className="text-xl font-semibold" data-testid="text-app-name">MindFlow</span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -144,8 +144,11 @@ export default function BrainDump() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">Brain Dump 📝</h1>
-          <p className="text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <BookOpen className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl md:text-4xl font-bold" data-testid="heading-brain-dump">Brain Dump</h1>
+          </div>
+          <p className="text-muted-foreground" data-testid="text-description">
             Tell us what's on your mind, and we'll create a personalized study plan
           </p>
         </div>
@@ -154,8 +157,8 @@ export default function BrainDump() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Tasks Input */}
             <div className="space-y-2">
-              <Label htmlFor="tasks" className="text-base font-semibold">
-                What do you need to study? *
+              <Label htmlFor="tasks" className="text-base font-semibold" data-testid="label-tasks">
+                What do you need to study?
               </Label>
               <Textarea
                 id="tasks"
@@ -167,21 +170,22 @@ export default function BrainDump() {
                 data-testid="input-tasks"
                 className="resize-none"
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground" data-testid="text-tasks-hint">
                 Be as detailed as you'd like - this helps us create a better plan
               </p>
             </div>
 
             {/* Available Hours */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">
-                How many hours can you study today? *
+              <Label className="text-base font-semibold" data-testid="label-hours">
+                How many hours can you study today?
               </Label>
               <RadioGroup
                 value={availableHours}
                 onValueChange={setAvailableHours}
                 disabled={isLoading}
                 className="flex flex-wrap gap-3"
+                data-testid="radiogroup-hours"
               >
                 {["1", "2", "3", "4", "5", "6", "8"].map((hours) => (
                   <div key={hours} className="flex items-center">
@@ -203,8 +207,8 @@ export default function BrainDump() {
 
             {/* Subject Selection */}
             <div className="space-y-2">
-              <Label htmlFor="subject" className="text-base font-semibold">
-                Primary subject *
+              <Label htmlFor="subject" className="text-base font-semibold" data-testid="label-subject">
+                Primary subject
               </Label>
               <Select value={subject} onValueChange={setSubject} disabled={isLoading}>
                 <SelectTrigger id="subject" data-testid="select-subject">
@@ -212,7 +216,7 @@ export default function BrainDump() {
                 </SelectTrigger>
                 <SelectContent>
                   {SUBJECTS.map((subj) => (
-                    <SelectItem key={subj} value={subj}>
+                    <SelectItem key={subj} value={subj} data-testid={`option-subject-${subj.toLowerCase().replace(/\s+/g, "-")}`}>
                       {subj}
                     </SelectItem>
                   ))}
@@ -223,7 +227,7 @@ export default function BrainDump() {
             {/* Custom Subject Input */}
             {subject === "Other" && (
               <div className="space-y-2">
-                <Label htmlFor="customSubject" className="text-base font-semibold">
+                <Label htmlFor="customSubject" className="text-base font-semibold" data-testid="label-custom-subject">
                   Specify your subject
                 </Label>
                 <Input
@@ -239,7 +243,7 @@ export default function BrainDump() {
 
             {/* Challenges */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">
+              <Label className="text-base font-semibold" data-testid="label-challenges">
                 What challenges are you facing? (optional)
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -277,7 +281,7 @@ export default function BrainDump() {
                   Creating your plan...
                 </>
               ) : (
-                "Generate My Study Plan ⚡"
+                "Generate My Study Plan"
               )}
             </Button>
           </form>
