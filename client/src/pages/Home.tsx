@@ -1,14 +1,10 @@
-import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { CloakedFigure } from "@/components/CloakedFigure";
 import { Brain, Calendar, TrendingUp, BarChart3, Smile, Target, Zap } from "lucide-react";
 
 export default function Home() {
-  const [showFigure, setShowFigure] = useState(false);
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -43,17 +39,11 @@ export default function Home() {
           <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed" data-testid="text-hero-description">
             MindFlow combines artificial intelligence with mental wellness to create personalized study plans that adapt to your emotional state and learning style.
           </p>
-          <div 
-            className="relative inline-block"
-            onMouseEnter={() => setShowFigure(true)}
-          >
-            <Link href="/signup">
-              <Button size="lg" className="text-base px-8" data-testid="button-hero-cta">
-                Start Your Journey
-              </Button>
-            </Link>
-            {showFigure && <CloakedFigure stage="button" />}
-          </div>
+          <Link href="/signup">
+            <Button size="lg" className="text-base px-8" data-testid="button-hero-cta">
+              Start Your Journey
+            </Button>
+          </Link>
         </div>
       </section>
 
