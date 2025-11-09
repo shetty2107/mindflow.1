@@ -43,12 +43,15 @@ Preferred communication style: Simple, everyday language.
 - `/api/auth/login` - User login  
 - `/api/auth/logout` - User logout
 - `/api/auth/user` - Get current user
+- `/api/user/profile` - Get user profile with language preference
+- `/api/user/language` - PATCH to update language preference
 - `/api/study-plans` - CRUD operations for study plans
 - `/api/tasks` - CRUD operations for tasks
 - `/api/study-sessions` - Manage study sessions
 - `/api/emotions` - Track emotional states
 - `/api/ai/generate-plan` - Generate AI study plan
 - `/api/ai/adapt-plan` - Adapt plan based on emotion
+- `/api/roadmap` - Generate AI learning roadmap from user tasks
 
 **Data Storage**: In-memory storage implementation (`MemStorage` class) during development. The schema is defined using Drizzle ORM with PostgreSQL dialect, indicating production will use PostgreSQL (likely via Neon serverless). Storage interface (`IStorage`) provides abstraction for future database migration.
 
@@ -56,14 +59,37 @@ Preferred communication style: Simple, everyday language.
 - Generating personalized study plans from user input
 - Adapting plans based on emotional check-ins
 - Providing wellness-focused, empathetic guidance
+- Creating learning roadmaps from user tasks
 
 The AI considers: subject matter, available hours, raw task descriptions, user challenges (procrastination, focus issues, etc.), and current emotional state to create adaptive study schedules with built-in breaks and encouragement.
 
-**AI Configuration**: Temperature set to 0.7 for balanced creativity/consistency, max_tokens of 1500 for comprehensive plans, and wellness-focused system prompts to maintain empathetic tone.
+**Subject-Specific AI Prompts**: The system uses specialized prompts (SUBJECT_CONTEXTS) tailored for each academic domain:
+- **Mathematics**: Focus on problem-solving, formulas, step-by-step solutions
+- **Science**: Emphasizes experiments, scientific method, real-world applications
+- **Literature**: Concentrates on reading comprehension, literary analysis, themes, character development
+- **History**: Focuses on timelines, cause-and-effect, primary sources
+- **Computer Science & Engineering**: Highlights coding, algorithms, debugging
+
+Each subject also includes domain-specific study tips (SUBJECT_TIPS) integrated into the AI-generated plans.
+
+**Multi-Language Support**: Users can select from 12 supported languages (English, Spanish, French, German, Italian, Portuguese, Chinese, Japanese, Korean, Arabic, Hindi, Russian). Language preference is:
+- Stored in user profile (defaults to English)
+- Persists across sessions
+- Used in AI roadmap generation for localized milestone content
+- Accessible via LanguageSelector component on all major pages (Dashboard, Achievements, Brain Dump)
+
+**AI Roadmap Generation**: Analyzes user's created tasks to generate a visual learning path with 4-6 milestones. Each milestone includes:
+- Title and description (in user's preferred language)
+- Status (completed/current/upcoming)
+- Estimated hours
+- Prerequisites
+The roadmap automatically updates when tasks are created or completed via query invalidation.
+
+**AI Configuration**: Temperature set to 0.7 for balanced creativity/consistency, max_tokens of 1500 for comprehensive plans, max_tokens of 800 for roadmap generation, and wellness-focused system prompts to maintain empathetic tone.
 
 ### Data Models
 
-**Users**: Simple username/password model with UUID primary keys
+**Users**: Username/password model with UUID primary keys and language preference field (defaults to "English")
 
 **Study Plans**: Contains subject, custom subject option, available hours, challenges array, raw task input, AI-generated plan text, and timestamps
 
